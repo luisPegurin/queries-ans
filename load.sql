@@ -1,0 +1,35 @@
+DROP TABLE IF EXISTS demonstracoes_contabeis;
+DROP TABLE IF EXISTS tmp;
+
+CREATE TABLE demonstracoes_contabeis (
+	INDEX serial primary key,
+    DATA date,
+    REG_ANS int,
+    CD_CONTA_CONTABIL int,
+    DESCRICAO varchar(150),
+    VL_SALDO_FINAL numeric(14,2)
+);
+
+CREATE TABLE IF NOT EXISTS tmp (
+    DATA date,
+    REG_ANS int,
+    CD_CONTA_CONTABIL int,
+    DESCRICAO varchar(150),
+    VL_SALDO_FINAL text
+);
+
+\copy  tmp  FROM './2020/1T2020.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2020/2T2020.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2020/3T2020.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2020/4T2020.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2021/1T2021.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2021/2T2021.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+\copy  tmp  FROM './2021/3T2021.csv' WITH (FORMAT CSV, HEADER, ENCODING 'WIN1252', DELIMITER ';') 
+
+INSERT INTO  demonstracoes_contabeis  (data,REG_ANS,CD_CONTA_CONTABIL,DESCRICAO, VL_SALDO_FINAL)
+	(SELECT
+		data,REG_ANS,CD_CONTA_CONTABIL,DESCRICAO, cast(replace(VL_SALDO_FINAL,',','.') AS numeric) 
+		FROM tmp);
+
+
+DROP TABLE tmp;	
